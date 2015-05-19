@@ -1,0 +1,6 @@
+name 'provision'
+maintainer 'Joshua Timberman'
+maintainer_email 'cookbooks@housepub.org'
+license 'apache2'
+description 'Chef provision cookbook'
+version '0.1.0'
