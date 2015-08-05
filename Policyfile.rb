@@ -19,12 +19,19 @@ run_list(
          'openssh',
          'postfix',
          'chef-client-runit',
-         'housepub-datadog',
+#         'housepub-datadog',
+         'plexapp',
+         'housepub-annoyances',
+         'housepub-dnsmasq',
+         'dnsmasq'
         )
 
 cookbook 'packages', git: 'https://github.com/mattray/packages-cookbook', branch: 'multipackage'
 cookbook 'users', path: '../housepub-chef-repo/cookbooks/users'
 cookbook 'housepub-datadog', git: 'https://github.com/jtimberman/housepub-datadog.git', tag: '0.2.0'
+cookbook 'housepub-annoyances', git: 'https://github.com/jtimberman/housepub-annoyances.git'
+cookbook 'housepub-dnsmasq', git: 'https://github.com/jtimberman/housepub-dnsmasq.git'
+cookbook 'dnsmasq', git: 'https://github.com/hw-cookbooks/dnsmasq.git', ref: '889f22f'
 
 # Attributes drive recipes
 default['authorization']['sudo'].tap do |sudo|
@@ -51,8 +58,8 @@ default['ntp'].tap do |ntp|
   ntp['servers'] = ['0.us.pool.ntp.org', 'time.apple.com']
 end
 
-default['packages'] = %W(dmidecode emacs ethtool git iftop iperf3 iproute
-                         lsof lvm2 nmap nmap-ncat rsync telnet
+default['packages'] = %W(dmidecode emacs-nox ethtool git iftop iperf3
+                         iproute lsof lvm2 nmap nmap-ncat rsync telnet
                          the_silver_searcher tmux tree znc vim git
                          ruby ruby-devel rubygem-pry zsh)
 
@@ -72,4 +79,17 @@ default['runit'].tap do |runit|
   runit['start']        = '/etc/init.d/runit-start start'
   runit['stop']         = '/etc/init.d/runit-start stop'
   runit['reload']       = '/etc/init.d/runit-start reload'
+end
+
+default['annoyances']['rhel']['delete_existing_firewall_rules'] = false
+
+default['dnsmasq'].tap do |dnsmasq|
+  dnsmasq['dns'].tap do |dns|
+    dns['server'] = '205.171.2.65'
+  end
+
+  dnsmasq['dhcp'].tap do |dhcp|
+    dhcp['domain'] = 'int.housepub.org'
+    dhcp['tftp-root'] = '/var/lib/tftpboot'
+  end
 end
